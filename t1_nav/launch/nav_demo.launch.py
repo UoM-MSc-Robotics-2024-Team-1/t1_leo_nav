@@ -40,7 +40,22 @@ def generate_launch_description():
     # Include SLAM Toolbox standard launch file
     launch_slamtoolbox = IncludeLaunchDescription(
     PythonLaunchDescriptionSource([get_package_share_directory('slam_toolbox'), '/launch', '/online_async_launch.py']),
-    launch_arguments={}.items(),
+    launch_arguments={
+            'use_sim_time': 'true',
+            'scan_topic': '/scan',
+            'odom_topic': '/odom',
+            'map_frame': 'map',
+            'base_frame': 'base_link',
+            'global_frame': 'map',
+            }.items(),
+    )
+
+    node_map_saver = Node(
+        package='map_server',
+        executable='map_saver',
+        name='map_saver',
+        output='screen',
+        parameters=[os.path.join(get_package_share_directory('t1_nav'), 'maps', 'map.yaml')]
     )
 
     # Behaviour Tree Navigator
@@ -110,6 +125,7 @@ def generate_launch_description():
     ld.add_action(node_planner)
     ld.add_action(node_controller)
     ld.add_action(node_lifecycle_manager)
+    #ld.add_action(node_map_saver)
     #ld.add_action(node_explore)
 
     return ld

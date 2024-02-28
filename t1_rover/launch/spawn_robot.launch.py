@@ -103,7 +103,8 @@ def spawn_robot(context: LaunchContext, namespace: LaunchConfiguration):
         executable="parameter_bridge",
         name=node_name_prefix + "parameter_bridge",
         arguments=[
-            robot_ns + '/cmd_vel'                               +   '@geometry_msgs/msg/Twist'        +   ']'   +   'ignition.msgs.Twist',
+            '/clock'                                            +   '@rosgraph_msgs/msg/Clock'        +   '['   +   'ignition.msgs.Clock',
+            robot_ns + '/cmd_vel'                               +   '@geometry_msgs/msg/Twist'        +   '@'   +   'ignition.msgs.Twist',
             robot_ns + '/odom'                                  +   '@nav_msgs/msg/Odometry'          +   '['   +   'ignition.msgs.Odometry',
             robot_ns + '/tf'                                    +   '@tf2_msgs/msg/TFMessage'         +   '['   +   'ignition.msgs.Pose_V',
             robot_ns + '/imu/data_raw'                          +   '@sensor_msgs/msg/Imu'            +   '['   +   'ignition.msgs.IMU',
@@ -114,7 +115,7 @@ def spawn_robot(context: LaunchContext, namespace: LaunchConfiguration):
         ],
         parameters=[
             {
-                "qos_overrides./tf_static.publisher.durability": "transient_local",
+                "qos_overrides." + robot_ns + "/subscriber.reliability": "reliable",
             }
         ],
         remappings= [
@@ -157,20 +158,11 @@ def generate_launch_description():
         launch_arguments={}.items(),
     )
 
-    '''
-    # Including the laser launch file 
-    laser_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([get_package_share_directory('t1_rover'), '/launch', '/laser.launch']),
-        launch_arguments={}.items(),
-    )
-    '''
-
 
 
     # Add actions to LaunchDescription
     ld.add_action(name_argument)
     ld.add_action(OpaqueFunction(function=spawn_robot, args=[namespace]))
     ld.add_action(gazebo_launch)
-    #ld.add_action(laser_launch)
 
     return ld
