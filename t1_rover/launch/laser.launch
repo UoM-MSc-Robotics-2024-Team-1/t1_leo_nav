@@ -1,6 +1,0 @@
-<launch>
-  <node name="rplidar_node" pkg="rplidar_ros" type="rplidarNode" output="screen">
-    <param name="serial_port" value="/dev/lidar"/>
-    <param name="frame_id" value="laser_frame"/>
-  </node>
-</launch>
