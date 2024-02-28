@@ -82,6 +82,7 @@ def spawn_robot(context: LaunchContext, namespace: LaunchConfiguration):
         ],
     )
 
+    '''
     # Add ros2 launch SLAM toolbox 
     slam_toolbox_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([get_package_share_directory('slam_toolbox'), '/launch', '/online_async_launch.py']),
@@ -94,26 +95,7 @@ def spawn_robot(context: LaunchContext, namespace: LaunchConfiguration):
             'global_frame': 'map',
             }.items()
     )
-
- # Define the full path for the map file
-    map_file_path = os.path.join(get_package_share_directory('t1_rover'), 'maps', 'my_map')
-
-    map_saver_params = {
-        'map_topic': 'map',
-        'map_url': 'map_name',  # Ensure this is a valid path or adjust as needed
-        'image_format': 'pgm',
-        'map_mode': 'trinary',
-        'free_thresh': 0.25,
-        'occupied_thresh': 0.65
-    }
-
-    node_map_saver = Node(
-        package='t1_rover',
-        executable='custom_map_saver',
-        name='map_saver',
-        output='screen',
-        parameters=[map_saver_params]  # Pass parameters here
-    )
+    '''
 
     # Bridge ROS topics and Gazebo messages for establishing communication
     topic_bridge = Node(
@@ -152,8 +134,6 @@ def spawn_robot(context: LaunchContext, namespace: LaunchConfiguration):
     return [
         robot_state_publisher,
         leo_rover,
-        slam_toolbox_launch,
-        node_map_saver,
         topic_bridge,
         image_bridge,
     ]

@@ -499,7 +499,7 @@
     <gazebo reference="rplidar_link">
         <sensor type="gpu_lidar" name="generic_lidar_sensor">
 
-          <topic>${link_prefix}/scan</topic>
+          <topic>${link_prefix}scan</topic>
           <frame_id>rplidar_link</frame_id>
           <ignition_frame_id>rplidar_link</ignition_frame_id>
 

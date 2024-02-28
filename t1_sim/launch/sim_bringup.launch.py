@@ -12,6 +12,7 @@ def generate_launch_description():
 
     sdf_path = os.path.join(get_package_share_directory('t1_sim'), 'worlds', 'tb3.sdf')
 
+
     if 'IGN_GAZEBO_RESOURCE_PATH' in os.environ:
         gz_world_path = os.environ['IGN_GAZEBO_RESOURCE_PATH'] + os.pathsep + os.path.join(get_package_share_directory('t1_sim'), "worlds")
     else:
