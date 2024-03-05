@@ -33,21 +33,14 @@ def generate_launch_description():
 
     # Include t1_rover to spawn the robot and launch gazebo and rviz
     launch_rover = IncludeLaunchDescription(
-    PythonLaunchDescriptionSource([get_package_share_directory('t1_rover'), '/launch', '/spawn_robot.launch.py']),
+    PythonLaunchDescriptionSource([get_package_share_directory('t1_rover'), '/launch', '/rover.launch.py']),
     launch_arguments={}.items(),
     )
 
     # Include SLAM Toolbox standard launch file
     launch_slamtoolbox = IncludeLaunchDescription(
     PythonLaunchDescriptionSource([get_package_share_directory('slam_toolbox'), '/launch', '/online_async_launch.py']),
-    launch_arguments={
-            'use_sim_time': 'true',
-            'scan_topic': '/scan',
-            'odom_topic': '/odom',
-            'map_frame': 'map',
-            'base_frame': 'base_link',
-            'global_frame': 'map',
-            }.items(),
+    launch_arguments={}.items(),
     )
 
     node_map_saver = Node(
@@ -126,6 +119,6 @@ def generate_launch_description():
     ld.add_action(node_controller)
     ld.add_action(node_lifecycle_manager)
     #ld.add_action(node_map_saver)
-    #ld.add_action(node_explore)
+    ld.add_action(node_explore)
 
     return ld

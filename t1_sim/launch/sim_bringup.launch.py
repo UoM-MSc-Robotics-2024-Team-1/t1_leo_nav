@@ -10,22 +10,29 @@ from launch_ros.actions import Node, SetParameter
 def generate_launch_description():
     ld = LaunchDescription()
 
-    sdf_path = os.path.join(get_package_share_directory('t1_sim'), 'worlds', 'tb3.sdf')
+    # Specify the name of the package
+    pkg_name = 't1_sim'
 
+    # Set ignition resource path (so it can find your world files)
+    ign_resource_path = SetEnvironmentVariable(name='IGN_GAZEBO_RESOURCE_PATH',
+    value=[os.path.join(get_package_share_directory(pkg_name),'worlds')])
+
+    # Include extra models in the world
+    sdf_path = os.path.join(get_package_share_directory(pkg_name), 'worlds', 'tb3.sdf')
 
     if 'IGN_GAZEBO_RESOURCE_PATH' in os.environ:
-        gz_world_path = os.environ['IGN_GAZEBO_RESOURCE_PATH'] + os.pathsep + os.path.join(get_package_share_directory('t1_sim'), "worlds")
+        gz_world_path =  os.environ['IGN_GAZEBO_RESOURCE_PATH'] + os.pathsep + os.path.join(get_package_share_directory(pkg_name), "worlds")
     else:
-        gz_world_path = os.path.join(get_package_share_directory('t1_sim'), "worlds")
+        gz_world_path =  os.path.join(get_package_share_directory(pkg_name), "worlds")
 
-    ign_resource_path = SetEnvironmentVariable(name='IGN_GAZEBO_RESOURCE_PATH',value=[gz_world_path])
+    ign_resource_path_update = SetEnvironmentVariable(name='IGN_GAZEBO_RESOURCE_PATH',value=[gz_world_path])
 
-    # Launch world
-    gz_start_world = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([get_package_share_directory('ros_gz_sim'), '/launch', '/gz_sim.launch.py']),
-        launch_arguments={
-            'gz_args': '-r ' + 'empty.sdf'
-            }.items(),
+    # Include the Gazebo launch file
+    launch_gazebo = IncludeLaunchDescription(
+    PythonLaunchDescriptionSource([get_package_share_directory('ros_gz_sim'), '/launch', '/gz_sim.launch.py']),
+    launch_arguments={
+    'gz_args' : '-r empty.sdf'
+    }.items(),
     )
 
     # Add features
@@ -37,20 +44,21 @@ def generate_launch_description():
     output='screen'
     )
 
-    # Launch rviz
+    # Rviz node
     node_rviz = Node(
         package='rviz2',
         namespace='',
         executable='rviz2',
         name='rviz2',
-        arguments=['-d' + os.path.join(get_package_share_directory('t1_sim'), 'rviz', 'nav2.rviz')]
+        arguments=['-d' + os.path.join(get_package_share_directory(pkg_name), 'rviz', 'nav2.rviz')]
     )
 
     # Add actions
     ld.add_action(SetParameter(name='use_sim_time', value=True))
     ld.add_action(ign_resource_path)
+    ld.add_action(ign_resource_path_update)
+    ld.add_action(launch_gazebo)
     ld.add_action(gz_spawn_objects)
-    ld.add_action(gz_start_world)
     ld.add_action(node_rviz)
 
     return ld

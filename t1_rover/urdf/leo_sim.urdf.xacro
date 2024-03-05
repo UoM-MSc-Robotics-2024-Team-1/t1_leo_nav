@@ -3,13 +3,12 @@
        name="leo_sim">
 
   <xacro:arg name="fixed" default="false"/>
-  <xacro:arg name="robot_ns" default=""/>
   <xacro:arg name="mecanum_wheels" default="false"/>
 
-  <xacro:include filename="$(find t1_rover)/urdf/macros.xacro"/>
+  <xacro:include filename="$(find t1_rover)/urdf/macros2.xacro"/>
 
-  <xacro:leo_sim robot_ns="$(arg robot_ns)"
-                 fixed="$(arg fixed)"
+  <xacro:leo_sim fixed="$(arg fixed)"
                  mecanum_wheels="$(arg mecanum_wheels)"/>
+                 
 
 </robot>
