@@ -1,9 +1,9 @@
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch_ros.actions import SetParameter, Node
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import PathJoinSubstitution
+from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
 import os
 
 
@@ -19,7 +19,10 @@ def generate_launch_description():
     # Define nav_to_pose behaviour tree
     bt_xml_navtopose_file = PathJoinSubstitution([pkg_nav, 'behavior_tree_xml', 'bt_simple_nav.xml'])
 
-    
+    # Declare the argument for use_sim_time
+    use_sim_time_arg = DeclareLaunchArgument(
+        'use_sim_time', default_value='true', description='Whether to run in simulation mode'
+    )
 
     # Necessary fixes
     remappings = [('/tf', 'tf'), ('/tf_static', 'tf_static')]
@@ -36,10 +39,15 @@ def generate_launch_description():
     config_planner = PathJoinSubstitution([pkg_nav, 'config', 'planner.yaml'])
     config_controller = PathJoinSubstitution([pkg_nav, 'config', 'controller.yaml'])
 
-    # Include t1_rover to spawn the robot and launch gazebo and rviz
+    # Declare the use_sim_time LaunchConfiguration
+    use_sim_time = LaunchConfiguration('use_sim_time')
+
+    # Include t1_rover to spawn the robot and launch rviz, pass through use sim time argument
     launch_rover = IncludeLaunchDescription(
     PythonLaunchDescriptionSource([get_package_share_directory('t1_rover'), '/launch', '/rover.launch.py']),
-    launch_arguments={}.items(),
+    launch_arguments={
+        'use_sim_time': use_sim_time
+    }.items(),
     )
 
     # Include SLAM Toolbox standard launch file
@@ -62,7 +70,12 @@ def generate_launch_description():
         executable='bt_navigator',
         name='bt_navigator',
         output='screen',
-        parameters=[config_bt_nav,{'default_nav_to_pose_bt_xml' : bt_xml_navtopose_file}],
+        parameters=[
+            config_bt_nav,
+            #{'default_nav_to_pose_bt_xml' : bt_xml_navtopose_file}
+            {'use_sim_time': use_sim_time},
+        ], 
+
         remappings=remappings,
     )
 
@@ -72,7 +85,10 @@ def generate_launch_description():
         executable='behavior_server',
         name='behaviour_server',
         output='screen',
-        parameters=[config_bt_nav],
+         parameters=[
+            config_bt_nav,
+            {'use_sim_time': use_sim_time},
+        ], 
         remappings=remappings,
     )
 
@@ -82,7 +98,10 @@ def generate_launch_description():
         executable='planner_server',
         name='planner_server',
         output='screen',
-        parameters=[config_planner],
+         parameters=[
+            config_planner,
+            {'use_sim_time': use_sim_time},
+        ], 
         remappings=remappings,
     )
 
@@ -92,7 +111,10 @@ def generate_launch_description():
         executable='controller_server',
         name='controller_server',
         output='screen',
-        parameters=[config_controller],
+         parameters=[
+            config_controller,
+            {'use_sim_time': use_sim_time},
+        ], 
         remappings=remappings,
     )
 
@@ -122,7 +144,7 @@ def generate_launch_description():
 
 
     # Add actions to LaunchDescription
-    ld.add_action(SetParameter(name='use_sim_time', value=True))
+    ld.add_action(use_sim_time_arg)
     ld.add_action(launch_rover)
     ld.add_action(launch_slamtoolbox)
     ld.add_action(node_bt_nav)
@@ -132,6 +154,6 @@ def generate_launch_description():
     ld.add_action(node_lifecycle_manager)
     #ld.add_action(node_map_saver)
     #ld.add_action(node_explore)
-    ld.add_action(node_simple_nav)
+    #ld.add_action(node_simple_nav)
 
     return ld

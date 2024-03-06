@@ -69,10 +69,11 @@ local_costmap:
       robot_base_frame: base_link
       use_sim_time: True
       rolling_window: True
-      width: 3
-      height: 3
+      width: 40
+      height: 40
       resolution: 0.06
-      robot_radius: 0.175
+      footprint: "[ [0.2165, 0.2235], [0.2165, -0.2235], [-0.2165, -0.2235], [-0.2165, 0.2235] ]"
+      #robot_radius: 0.175
       plugins: ["obstacle_layer", "inflation_layer"]
       always_send_full_costmap: True
       inflation_layer:
@@ -90,6 +91,6 @@ local_costmap:
           marking: True
           data_type: "LaserScan"
           raytrace_max_range: 3.0
-          raytrace_min_range: 0.2
+          raytrace_min_range: 0.0
           obstacle_max_range: 2.5
-          obstacle_min_range: 0.2
+          obstacle_min_range: 0.0

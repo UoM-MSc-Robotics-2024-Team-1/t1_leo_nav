@@ -163,7 +163,7 @@
     <link name="camera_frame"/>
     <link name="camera_optical_frame"/>
     <link name="imu_frame"/>
-    <link name="laser_frame"/>
+    <link name="laser"/>
 
     <!--LIDAR LINK-->
 
@@ -329,7 +329,7 @@
     <joint name="laser_joint" type="fixed">
       <origin xyz="0 0 0.0368" rpy="0 0 ${pi}"/>
       <parent link="rplidar_link"/>
-      <child link="laser_frame"/>
+      <child link="laser"/>
     </joint>
 
 

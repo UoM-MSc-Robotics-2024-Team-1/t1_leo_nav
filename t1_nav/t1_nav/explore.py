@@ -169,7 +169,7 @@ class Explore(Node):
         """
         num_frontiers = 1
         num_walls = 0
-        grid_length = 20
+        grid_length = 25
         wall_threshold = 0
 
         start_posx = index[0] - grid_length/2
@@ -255,7 +255,7 @@ class Explore(Node):
             x=pose_x, y=pose_y)))
 
         current_point, current_quat = self.get_transform(
-            'map', 'base_footprint')
+            'map', 'base_link')
 
         robot = np.array([current_point.x, current_point.y])
         goal = np.array([pose.pose.position.x,
@@ -341,7 +341,7 @@ class Explore(Node):
             self.original_occupancy_grid_data = self.occupancy_grid_data
 
             robot_map_point, _ = self.get_transform(
-                'map', 'base_footprint')
+                'map', 'base_link')
 
             self.robot_location = self.map_coords_to_occupancy_grid(
                 robot_map_point)

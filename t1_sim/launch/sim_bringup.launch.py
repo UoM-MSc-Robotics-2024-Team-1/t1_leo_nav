@@ -18,7 +18,7 @@ def generate_launch_description():
     value=[os.path.join(get_package_share_directory(pkg_name),'worlds')])
 
     # Include extra models in the world
-    sdf_path = os.path.join(get_package_share_directory(pkg_name), 'worlds', 'boundary.sdf')
+    sdf_path = os.path.join(get_package_share_directory(pkg_name), 'worlds', 'tb3.sdf')
 
     if 'IGN_GAZEBO_RESOURCE_PATH' in os.environ:
         gz_world_path =  os.environ['IGN_GAZEBO_RESOURCE_PATH'] + os.pathsep + os.path.join(get_package_share_directory(pkg_name), "worlds")
@@ -44,13 +44,47 @@ def generate_launch_description():
     output='screen'
     )
 
-    # Rviz node
-    node_rviz = Node(
-        package='rviz2',
-        namespace='',
-        executable='rviz2',
-        name='rviz2',
-        arguments=['-d' + os.path.join(get_package_share_directory(pkg_name), 'rviz', 'nav2.rviz')]
+    #GAZEBO
+
+    # Spawn a robot inside a simulation
+    leo_rover = Node(
+        package="ros_gz_sim",
+        executable="create",
+        arguments=[
+            "-topic",
+            "robot_description",
+            "-z",
+            "0.5",
+        ],
+        output="screen",
+    )
+
+    # Bridge
+    # Bridge ROS topics and Gazebo messages for establishing communication
+    topic_bridge = Node(
+        package="ros_gz_bridge",
+        executable="parameter_bridge",
+        name="parameter_bridge",
+        arguments=[
+            '/clock'                                 +   '@rosgraph_msgs/msg/Clock'        +   '['   +   'ignition.msgs.Clock',
+            '/cmd_vel'                               +   '@geometry_msgs/msg/Twist'        +   '@'   +   'ignition.msgs.Twist',
+            '/odom'                                  +   '@nav_msgs/msg/Odometry'          +   '['   +   'ignition.msgs.Odometry',
+            '/tf'                                    +   '@tf2_msgs/msg/TFMessage'         +   '['   +   'ignition.msgs.Pose_V',
+            '/imu/data_raw'                          +   '@sensor_msgs/msg/Imu'            +   '['   +   'ignition.msgs.IMU',
+            '/camera/camera_info'                    +   '@sensor_msgs/msg/CameraInfo'     +   '['   +   'ignition.msgs.CameraInfo',
+            '/joint_states'                          +   '@sensor_msgs/msg/JointState'     +   '['   +   'ignition.msgs.Model',
+            '/scan'                                  +   '@sensor_msgs/msg/LaserScan'      +   '['   +   'ignition.msgs.LaserScan',
+            '/world/empty/joint_state'               +   '@sensor_msgs/msg/JointState'     +   '['   +   'ignition.msgs.Model',
+        ],
+        parameters=[
+            {
+                "qos_overrides./tf_static.publisher.durability": "transient_local",
+            }
+        ],
+        remappings= [
+            ('/world/empty/joint_state', 'joint_states')
+            ],
+        output="screen",
     )
 
     # Add actions
@@ -59,6 +93,7 @@ def generate_launch_description():
     ld.add_action(ign_resource_path_update)
     ld.add_action(launch_gazebo)
     ld.add_action(gz_spawn_objects)
-    ld.add_action(node_rviz)
+    ld.add_action(leo_rover)
+    ld.add_action(topic_bridge)
 
     return ld
