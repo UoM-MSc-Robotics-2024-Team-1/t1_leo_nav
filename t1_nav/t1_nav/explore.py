@@ -255,7 +255,7 @@ class Explore(Node):
             x=pose_x, y=pose_y)))
 
         current_point, current_quat = self.get_transform(
-            'map', 'base_link')
+            'map', 'base_footprint')
 
         robot = np.array([current_point.x, current_point.y])
         goal = np.array([pose.pose.position.x,
@@ -341,7 +341,7 @@ class Explore(Node):
             self.original_occupancy_grid_data = self.occupancy_grid_data
 
             robot_map_point, _ = self.get_transform(
-                'map', 'base_link')
+                'map', 'base_footprint')
 
             self.robot_location = self.map_coords_to_occupancy_grid(
                 robot_map_point)

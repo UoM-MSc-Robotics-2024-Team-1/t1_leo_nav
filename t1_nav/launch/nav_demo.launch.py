@@ -16,6 +16,11 @@ def generate_launch_description():
     # Declare package directory
     pkg_nav = get_package_share_directory('t1_nav')
 
+    # Define nav_to_pose behaviour tree
+    bt_xml_navtopose_file = PathJoinSubstitution([pkg_nav, 'behavior_tree_xml', 'bt_simple_nav.xml'])
+
+    
+
     # Necessary fixes
     remappings = [('/tf', 'tf'), ('/tf_static', 'tf_static')]
 
@@ -57,7 +62,7 @@ def generate_launch_description():
         executable='bt_navigator',
         name='bt_navigator',
         output='screen',
-        parameters=[config_bt_nav],
+        parameters=[config_bt_nav,{'default_nav_to_pose_bt_xml' : bt_xml_navtopose_file}],
         remappings=remappings,
     )
 
@@ -108,6 +113,13 @@ def generate_launch_description():
         output='screen',
     )
 
+    node_simple_nav = Node(
+        package='t1_nav',
+        executable='simple_nav',
+        name='simple_nav',
+        output='screen',
+    )
+
 
     # Add actions to LaunchDescription
     ld.add_action(SetParameter(name='use_sim_time', value=True))
@@ -119,6 +131,7 @@ def generate_launch_description():
     ld.add_action(node_controller)
     ld.add_action(node_lifecycle_manager)
     #ld.add_action(node_map_saver)
-    ld.add_action(node_explore)
+    #ld.add_action(node_explore)
+    ld.add_action(node_simple_nav)
 
     return ld

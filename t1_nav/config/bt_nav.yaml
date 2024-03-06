@@ -10,7 +10,6 @@ bt_navigator:
     # nav2_bt_navigator/navigate_to_pose_w_replanning_and_recovery.xml
     # nav2_bt_navigator/navigate_through_poses_w_replanning_and_recovery.xml
     # They can be set here or via a RewrittenYaml remap from a parent launch file to Nav2.
-    default_bt_xml_filename: "nav2_bt_navigator/nav_to_pose_with_consistent_replanning_and_if_path_becomes_invalid.xml"
 
 
 behavior_server:

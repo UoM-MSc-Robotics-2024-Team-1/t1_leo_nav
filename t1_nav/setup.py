@@ -12,6 +12,8 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        #Add behaviour tree xml files
+        (os.path.join('share', package_name, 'behavior_tree_xml'), glob(os.path.join('behavior_tree_xml', '*.xml'))),
         # Include launch files
         (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', '*launch.[pxy][yma]*'))),
         # Include config files
@@ -30,6 +32,7 @@ setup(
         'console_scripts': [
             'custom_map_saver = t1_nav.custom_map_saver_node:main',
             'explore = t1_nav.explore:main',
+            'simple_nav = t1_nav.simple_nav:main',
         ],
     },
 )
