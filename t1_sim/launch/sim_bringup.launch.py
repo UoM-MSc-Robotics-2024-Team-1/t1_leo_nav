@@ -18,7 +18,7 @@ def generate_launch_description():
     value=[os.path.join(get_package_share_directory(pkg_name),'worlds')])
 
     # Include extra models in the world
-    sdf_path = os.path.join(get_package_share_directory(pkg_name), 'worlds', 'tb3.sdf')
+    sdf_path = os.path.join(get_package_share_directory(pkg_name), 'worlds', 'boundary.sdf')
 
     if 'IGN_GAZEBO_RESOURCE_PATH' in os.environ:
         gz_world_path =  os.environ['IGN_GAZEBO_RESOURCE_PATH'] + os.pathsep + os.path.join(get_package_share_directory(pkg_name), "worlds")

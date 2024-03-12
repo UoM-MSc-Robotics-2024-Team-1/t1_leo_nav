@@ -54,18 +54,23 @@ class BasicNavigator(Node):
           history=QoSHistoryPolicy.KEEP_LAST,
           depth=1)
 
-
-
+        self.initial_pose_received = False
         self.nav_through_poses_client = ActionClient(self,
                                                      NavigateThroughPoses,
                                                      'navigate_through_poses')
         self.nav_to_pose_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
-
         self.model_pose_sub = self.create_subscription(PoseWithCovarianceStamped,
                                                        'amcl_pose',
                                                        self._amclPoseCallback,
                                                        amcl_pose_qos)
-        
+        self.initial_pose_pub = self.create_publisher(PoseWithCovarianceStamped,
+                                                      'initialpose',
+                                                      10)
+
+    def setInitialPose(self, initial_pose):
+        self.initial_pose_received = False
+        self.initial_pose = initial_pose
+        self._setInitialPose()
 
     def goThroughPoses(self, poses):
         # Sends a `NavToPose` action request and waits for completion
@@ -120,20 +125,81 @@ class BasicNavigator(Node):
             rclpy.spin_until_future_complete(self, future)
         return
 
+    def isNavComplete(self):
+        if not self.result_future:
+            # task was cancelled or completed
+            return True
+        rclpy.spin_until_future_complete(self, self.result_future, timeout_sec=0.10)
+        if self.result_future.result():
+            self.status = self.result_future.result().status
+            if self.status != GoalStatus.STATUS_SUCCEEDED:
+                self.info('Goal with failed with status code: {0}'.format(self.status))
+                return True
+        else:
+            # Timed out, still processing, not complete yet
+            return False
+
+        self.info('Goal succeeded!')
+        return True
+
     def getFeedback(self):
         return self.feedback
 
     def getResult(self):
         return self.status
 
+    def waitUntilNav2Active(self):
+        self._waitForNodeToActivate('amcl')
+        self._waitForInitialPose()
+        self._waitForNodeToActivate('bt_navigator')
+        self.info('Nav2 is ready for use!')
+        return
 
+    def _waitForNodeToActivate(self, node_name):
+        # Waits for the node within the tester namespace to become active
+        self.debug('Waiting for ' + node_name + ' to become active..')
+        node_service = node_name + '/get_state'
+        state_client = self.create_client(GetState, node_service)
+        while not state_client.wait_for_service(timeout_sec=1.0):
+            self.info(node_service + ' service not available, waiting...')
+
+        req = GetState.Request()
+        state = 'unknown'
+        while (state != 'active'):
+            self.debug('Getting ' + node_name + ' state...')
+            future = state_client.call_async(req)
+            rclpy.spin_until_future_complete(self, future)
+            if future.result() is not None:
+                state = future.result().current_state.label
+                self.debug('Result of get_state: %s' % state)
+            time.sleep(2)
+        return
+
+    def _waitForInitialPose(self):
+        while not self.initial_pose_received:
+            self.info('Setting initial pose')
+            self._setInitialPose()
+            self.info('Waiting for amcl_pose to be received')
+            rclpy.spin_once(self, timeout_sec=1)
+        return
+
+    def _amclPoseCallback(self, msg):
+        self.initial_pose_received = True
+        return
 
     def _feedbackCallback(self, msg):
         self.feedback = msg.feedback
         return
 
+    def _setInitialPose(self):
+        msg = PoseWithCovarianceStamped()
+        msg.pose.pose = self.initial_pose
+        msg.header.frame_id = 'map'
+        msg.header.stamp = self.get_clock().now().to_msg()
+        self.info('Publishing Initial Pose')
+        self.initial_pose_pub.publish(msg)
+        return
     
-    #Create position for publishing
     def create_pose_stamped(self, x, y, z, yaw, frame_id="map"):
         pose = PoseStamped()
         pose.header.stamp = self.get_clock().now().to_msg()  # Corrected time assignment
@@ -162,9 +228,21 @@ class BasicNavigator(Node):
         self.get_logger().debug(msg)
         return
 
-def main(args=None):
-    rclpy.init(args=args)
+def main(argv=sys.argv[1:]):
+
+    rclpy.init()
     navigator = BasicNavigator()
+
+    # Set our demo's initial pose
+    initial_pose = Pose()
+    initial_pose.position.x = 3.45
+    initial_pose.position.y = 2.15
+    initial_pose.orientation.z = 1.0
+    initial_pose.orientation.w = 0.0
+    navigator.setInitialPose(initial_pose)
+
+    # Wait for navigation to fully activate
+    navigator.waitUntilNav2Active()
 
     # Go to our demos first goal pose
     waypoints = [
@@ -173,12 +251,35 @@ def main(args=None):
         navigator.create_pose_stamped(0.0, 0.5, 0.0, 1.57),
         # Add more waypoints as needed
     ]
-
+    
     navigator.goThroughPoses(waypoints)
     #navigator.goToPose(goal_pose)
 
-    rclpy.shutdown()
+    i = 0
+    while not navigator.isNavComplete():
+        ################################################
+        #
+        # Implement some code here for your application!
+        #
+        ################################################
 
-    
-if __name__ == '__main__':
-    main()
+        # Do something with the feedback
+        i = i + 1
+        feedback = navigator.getFeedback()
+        if feedback and i % 5 == 0:
+            print('Estimated time of arrival: ' + '{0:.0f}'.format(
+                  _DurationsType.from_msg(feedback.estimated_time_remaining).nanoseconds / 1e9)
+                  + ' seconds.')
+
+    # Do something depending on the return code
+    result = navigator.getResult()
+    if result == GoalStatus.STATUS_SUCCEEDED:
+        print('Goal succeeded!')
+    elif result == GoalStatus.STATUS_CANCELED:
+        print('Goal was canceled!')
+    elif result == GoalStatus.STATUS_ABORTED:
+        print('Goal failed!')
+    else:
+        print('Goal has an invalid return status!')
+
+    exit(0)

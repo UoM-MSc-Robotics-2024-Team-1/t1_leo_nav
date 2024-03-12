@@ -33,6 +33,8 @@ setup(
             'custom_map_saver = t1_nav.custom_map_saver_node:main',
             'explore = t1_nav.explore:main',
             'simple_nav = t1_nav.simple_nav:main',
+            'nav_demo = t1_nav.nav_demo:main',
+            'robot_navigator = t1_nav.robot_navigator:main'
         ],
     },
 )

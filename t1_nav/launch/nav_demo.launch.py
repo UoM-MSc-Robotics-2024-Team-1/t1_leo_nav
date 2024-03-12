@@ -32,12 +32,16 @@ def generate_launch_description():
         'planner_server',
         'behaviour_server',
         'bt_navigator',
+        #'map_server',
+        #'amcl',
+        #'waypoint_follower',
     ]
 
     # LOAD PARAMETERS FROM YAML FILES
     config_bt_nav = PathJoinSubstitution([pkg_nav, 'config', 'bt_nav.yaml'])
     config_planner = PathJoinSubstitution([pkg_nav, 'config', 'planner.yaml'])
     config_controller = PathJoinSubstitution([pkg_nav, 'config', 'controller.yaml'])
+    config_params = PathJoinSubstitution([pkg_nav, 'config', 'params.yaml'])
 
     # Declare the use_sim_time LaunchConfiguration
     use_sim_time = LaunchConfiguration('use_sim_time')
@@ -53,15 +57,9 @@ def generate_launch_description():
     # Include SLAM Toolbox standard launch file
     launch_slamtoolbox = IncludeLaunchDescription(
     PythonLaunchDescriptionSource([get_package_share_directory('slam_toolbox'), '/launch', '/online_async_launch.py']),
-    launch_arguments={}.items(),
-    )
-
-    node_map_saver = Node(
-        package='map_server',
-        executable='map_saver',
-        name='map_saver',
-        output='screen',
-        parameters=[os.path.join(get_package_share_directory('t1_nav'), 'maps', 'map.yaml')]
+    launch_arguments={
+        'use_sim_time': use_sim_time
+    }.items(),
     )
 
     # Behaviour Tree Navigator
@@ -71,8 +69,8 @@ def generate_launch_description():
         name='bt_navigator',
         output='screen',
         parameters=[
-            config_bt_nav,
-            #{'default_nav_to_pose_bt_xml' : bt_xml_navtopose_file}
+            config_params,
+            #{'default_nav_through_poses_bt_xml' : bt_xml_navtopose_file},
             {'use_sim_time': use_sim_time},
         ], 
 
@@ -85,8 +83,9 @@ def generate_launch_description():
         executable='behavior_server',
         name='behaviour_server',
         output='screen',
-         parameters=[
-            config_bt_nav,
+        parameters=[
+            config_params,
+            #{'default_nav_through_poses_bt_xml' : bt_xml_navtopose_file},
             {'use_sim_time': use_sim_time},
         ], 
         remappings=remappings,
@@ -99,7 +98,7 @@ def generate_launch_description():
         name='planner_server',
         output='screen',
          parameters=[
-            config_planner,
+            config_params,
             {'use_sim_time': use_sim_time},
         ], 
         remappings=remappings,
@@ -112,10 +111,37 @@ def generate_launch_description():
         name='controller_server',
         output='screen',
          parameters=[
-            config_controller,
+            config_params,
             {'use_sim_time': use_sim_time},
         ], 
         remappings=remappings,
+    )
+
+    # Map Server Node
+    node_map_server = Node(
+        package='nav2_map_server',
+        executable='map_server',
+        name='map_server',
+        output='screen',
+        parameters=[config_params]  # Make sure 'config_params' includes map_server parameters
+    )
+
+    # AMCL Node
+    node_amcl = Node(
+        package='nav2_amcl',
+        executable='amcl',
+        name='amcl',
+        output='screen',
+        parameters=[config_params]  # Ensure 'config_params' includes AMCL parameters
+    )
+
+    # Waypoint Follower Node
+    node_waypoint_follower = Node(
+        package='nav2_waypoint_follower',
+        executable='waypoint_follower',
+        name='waypoint_follower',
+        output='screen',
+        parameters=[config_params]  # Ensure 'config_params' includes waypoint_follower parameters
     )
 
     # Lifecycle Node Manager to automatically start lifecycles nodes (from list)
@@ -152,6 +178,9 @@ def generate_launch_description():
     ld.add_action(node_planner)
     ld.add_action(node_controller)
     ld.add_action(node_lifecycle_manager)
+    #ld.add_action(node_map_server)
+    #ld.add_action(node_amcl)
+    #ld.add_action(node_waypoint_follower)
     #ld.add_action(node_map_saver)
     #ld.add_action(node_explore)
     #ld.add_action(node_simple_nav)
