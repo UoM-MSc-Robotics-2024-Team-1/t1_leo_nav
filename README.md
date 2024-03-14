@@ -104,10 +104,4 @@ ros2 launch t1_nav nav_demo.launch.py use_sim_time:=false
 
 # Contributing
 
-Contributions to t1_leo_nav are welcome!
-
-License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-vbnet
+Contributions to t1_leo_nav are welcome! :)
