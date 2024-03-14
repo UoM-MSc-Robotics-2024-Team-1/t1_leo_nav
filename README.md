@@ -79,7 +79,7 @@ Configuring the URDF
 
 Before launching, ensure you update the macros.urdf file within the t1_rover package to include your absolute directory path for the mesh files. - This bug is due to be fixed shortly
 
-<mesh filename="file:///your/path/to/workspace/install/t1_rover/share/t1_rover/models/Rocker.dae"/>
+```<mesh filename="file:///your/path/to/workspace/install/t1_rover/share/t1_rover/models/Rocker.dae"/>```
 
 Do this for all, you can right click and change all occurances or ctrl F for quicker renaming
 
