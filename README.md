@@ -1,15 +1,15 @@
 # t1_leo_nav
 
-The `t1_leo_nav` repository is a comprehensive suite designed for ROS2, tailored for navigation and simulation of the T1 rover. This suite is divided into three main packages: `t1_rover`, `t1_sim`, and `t1_nav`, each serving a distinct role in the ecosystem.
+The `t1_leo_nav` repository is a comprehensive suite designed for ROS2, tailored for navigation and simulation of the Leo Rover. This suite is divided into three main packages: `t1_rover`, `t1_sim`, and `t1_nav`, each serving a distinct role in the system.
 
 ## Packages Overview
 
 ### t1_rover
 
-The `t1_rover` package acts as the description package for the T1 rover. It includes:
+The `t1_rover` package acts as the description package for the Leo Rover. It includes:
 
 - URDF files for the rover's physical description.
-- Robot localization nodes.
+- Robot localization node.
 - Launch files to visualize the rover in `rviz2`.
 
 This package encapsulates all necessary components to view the rover standalone in `rviz2`.
@@ -28,11 +28,14 @@ This package contains everything necessary for a complete simulation experience.
 The `t1_nav` package is focused on navigation and includes:
 
 - Integration with `nav2` and Behavior Trees for advanced navigation strategies.
-- `explore.py` for autonomous navigation and mapping.
-- `custom_map_saver_node.py` to save maps to your system.
-- `nav_point.py` to publish teleop twist commands for rover movement.
-- `simple_nav.py` for waypoint navigation.
-- `robot_navigate.py` containing various functions for navigation.
+
+- There are scripts that are currently underdevelopment but still function and can be looked at for self learning
+  - `explore.py` for autonomous navigation and mapping.
+  - `custom_map_saver_node.py` to save maps to your system automatically.
+  - `nav_point.py` to publish teleop twist commands for rover movement.
+  - `simple_nav.py` for waypoint navigation using nav2 (uses `robot_navigate.py`).
+  - `robot_navigate.py` containing various functions for navigation using nav2.
+  - ignore other scripts
 
 The main launch file is `t1_nav`, though `t1_rover` can also be launched independently.
 
@@ -40,17 +43,34 @@ The main launch file is `t1_nav`, though `t1_rover` can also be launched indepen
 
 Before running the packages, ensure the following dependencies are installed:
 
-1. **RPLIDAR Package**
+1. **RPLIDAR Package** - make sure this is in the same workspace
 
 ```bash
 git clone -b ros2 https://github.com/Slamtec/rplidar_ros.git
 ```
 
 2. **Gazebo Ignition** - Follow the official Gazebo installation guide.
-3. **Rviz2** - Comes pre-installed with ROS2 distributions.
-4. **Robot_localization**
-5. **Nav2**
-6. **SLAM**
+
+4. **Rviz2** - Comes pre-installed with ROS2 distributions.
+```bash
+sudo apt update
+sudo apt install ros-<distro>-rviz2
+```
+
+5. **Robot_localization**
+```bash
+sudo apt install ros-<distro>-robot-localization
+```
+
+7. **Nav2**
+```bash
+sudo apt install ros-<distro>-navigation2
+```
+
+9. **SLAM**
+```bash
+sudo apt install ros-<distro>-slam-toolbox
+```
 
 Ensure that you have the above packages and tools installed in your ROS2 environment.
 
