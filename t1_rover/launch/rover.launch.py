@@ -81,9 +81,6 @@ def generate_launch_description():
             os.path.join(get_package_share_directory(pkg_name), 'config/localization_params.yaml'), 
             {'use_sim_time': LaunchConfiguration('use_sim_time')}
         ],
-        remappings=[
-            ('/firmware/wheel_odom', '/odom'),
-        ]
     )
 
     # RPLIDAR node definition corrected (removed trailing comma)
