@@ -21,7 +21,7 @@ def generate_launch_description():
     xacro_file_sim = os.path.join(get_package_share_directory(pkg_name), 'urdf/leo_sim.urdf.xacro')
     robot_description_raw_sim = xacro.process_file(xacro_file_sim).toxml()
 
-    xacro_file = os.path.join(get_package_share_directory(pkg_name), 'urdf/leo.urdf.xacro')
+    xacro_file = os.path.join(get_package_share_directory(pkg_name), 'urdf/lidar.xacro')
     robot_description_raw = xacro.process_file(xacro_file).toxml()
 
     ''' Pass through the package path to directory
