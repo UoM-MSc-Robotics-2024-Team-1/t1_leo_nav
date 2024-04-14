@@ -6,13 +6,19 @@ The `t1_leo_nav` repository is a comprehensive suite designed for ROS2, tailored
 
 ### t1_rover
 
-The `t1_rover` package acts as the description package for the Leo Rover. It includes:
+The `t1_rover` package deals with all the files for the Leo Rover. It includes:
 
-- URDF files for the rover's physical description.
 - Robot localization node.
+- Imu Filter node
 - Launch files to visualize the rover in `rviz2`.
 
-This package encapsulates all necessary components to view the rover standalone in `rviz2`.
+This package encapsulates all necessary components to view the rover standalone in `rviz2` and `gazebo`.
+
+### robot_description
+
+This package is from: `https://github.com/LeoRover/leo_common-ros2`
+
+It includes the urdf files for the robot
 
 ### t1_sim
 
@@ -25,9 +31,10 @@ This package contains everything necessary for a complete simulation experience.
 
 ### t1_nav
 
-The `t1_nav` package is focused on navigation and includes:
+The `t1_nav` package is focused on autonomous navigation and mapping, it includes:
 
 - Integration with `nav2` and Behavior Trees for advanced navigation strategies.
+- Uses SLAM Toolbox for mapping
 
 - There are scripts that are currently underdevelopment but still function and can be looked at for self learning
   - `explore.py` for autonomous navigation and mapping.
@@ -37,7 +44,7 @@ The `t1_nav` package is focused on navigation and includes:
   - `robot_navigate.py` containing various functions for navigation using nav2.
   - ignore other scripts
 
-The main launch file is `t1_nav`, though `t1_rover` can also be launched independently.
+The main launch file is `t1_nav`, though `t1_rover` can also be launched independently if you dont want navigation.
 
 ## Installation
 
@@ -74,14 +81,8 @@ sudo apt install ros-<distro>-slam-toolbox
 
 Ensure that you have the above packages and tools installed in your ROS2 environment.
 
-# IMPORTANT
-Configuring the URDF
-
-Before launching, ensure you update the macros.urdf file within the t1_rover package to include your absolute directory path for the mesh files. - This bug is due to be fixed shortly
-
-```<mesh filename="file:///your/path/to/workspace/install/t1_rover/share/t1_rover/models/Rocker.dae"/>```
-
-Do this for all, you can right click and change all occurances or ctrl F for quicker renaming
+# Important
+To setup the leo rover with ROS2, please be sure to follow this tutorial: `https://github.com/UoMMScRobotics/UOMDocumentationForLeoRover/blob/main/Task06_Installing_ROS2/LeoOSROS2.md`
 
 # Launching the Simulation
 
