@@ -52,13 +52,12 @@ The `t1_nav` package is focused on autonomous navigation and mapping, it include
 - Integration with `nav2` and Behavior Trees for advanced navigation strategies.
 - Uses `SLAM Toolbox` for mapping
 
-- There are scripts that are currently underdevelopment but still function and can be looked at for self learning
-  - `explore.py` for autonomous navigation and mapping.
+- There are scripts are used for navigation purposes, you will need to run them from your own terminal
+  - `explore.py` for autonomous navigation and mapping using breadth first search.
   - `custom_map_saver_node.py` to save maps to your system automatically.
   - `nav_point.py` to publish teleop twist commands for rover movement.
-  - `simple_nav.py` for waypoint navigation using nav2 (uses `robot_navigate.py`).
+  - `nav2_nav_test.py` autonomously navigate to patrolling points using nav2, visualize the patrol points using marker (uses `robot_navigate.py`).
   - `robot_navigate.py` containing various functions for navigation using nav2.
-  - ignore other scripts
 
 The main launch file is `t1_nav`, though `t1_rover` can also be launched independently if you dont want navigation.
 
