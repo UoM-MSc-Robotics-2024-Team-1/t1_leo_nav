@@ -106,7 +106,7 @@ Ensure that you have the above packages and tools installed in your ROS2 environ
 # Important
 To setup the leo rover with ROS2, please be sure to follow this tutorial: `https://github.com/UoMMScRobotics/UOMDocumentationForLeoRover/blob/main/Task06_Installing_ROS2/LeoOSROS2.md`
 
-# Launching the Simulation
+# Launching the Leo Rover with Simulation
 
 To launch the simulation environment with t1_sim, use:
 
@@ -114,12 +114,13 @@ To launch the simulation environment with t1_sim, use:
 ros2 launch t1_rover rover.launch.py
 ```
 
-# Running Navigation
+# Launching the Leo Rover with Simulation and Running Autonomous Navigation 
 
 To run the navigation tasks with t1_nav, use:
 ```bash
 ros2 launch t1_nav nav_demo.launch.py
 ```
+*this will also launch `t1_rover` package automatically, you do not need to launch it seperately*
 
 # Launching without Simulation
 The launch files will use sim by default, to launch without simulation:
