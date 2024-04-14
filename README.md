@@ -2,23 +2,32 @@
 
 The `t1_leo_nav` repository is a comprehensive suite designed for ROS2, tailored for navigation and simulation of the Leo Rover. This suite is divided into three main packages: `t1_rover`, `t1_sim`, and `t1_nav`, each serving a distinct role in the system.
 
+# Other Packages Included
+I have included all neccessary packages in the git, however if you want to know more about the packages, the links can be found below
+The Lidar package is from: `https://github.com/CreedyNZ/rplidar_ros2`
+The leo_description package: `https://github.com/LeoRover/leo_common-ros2`
+
+
 ## Packages Overview
 
 ### t1_rover
 
-The `t1_rover` package deals with all the files for the Leo Rover. It includes:
+The `t1_rover` package deals with all the nodes for the Leo Rover. It includes:
 
 - Robot localization node.
-- Imu Filter node
-- Launch files to visualize the rover in `rviz2`.
+- Imu Filter node.
+- Launch files to visualize the rover in `rviz2` and `gazebo`.
 
 This package encapsulates all necessary components to view the rover standalone in `rviz2` and `gazebo`.
+You can also drive the rover around using teleop_twist_keyboard or other packages.
 
 ### robot_description
 
-This package is from: `https://github.com/LeoRover/leo_common-ros2`
+It includes the urdf files for the leo robot, this is launched from the t1_rover launch file.
 
-It includes the urdf files for the robot
+### rplidar_ros
+
+Includes different rplidars to launch, our specifc model we are using is the am12. This is launched from the t1_rover launch file
 
 ### t1_sim
 
