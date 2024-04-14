@@ -3,9 +3,16 @@
 The `t1_leo_nav` repository is a comprehensive suite designed for ROS2, tailored for navigation and simulation of the Leo Rover. This suite is divided into three main packages: `t1_rover`, `t1_sim`, and `t1_nav`, each serving a distinct role in the system.
 
 # Other Packages Included
-I have included all neccessary packages in the git, however if you want to know more about the packages, the links can be found below
-The Lidar package is from: `https://github.com/CreedyNZ/rplidar_ros2`
-The leo_description package: `https://github.com/LeoRover/leo_common-ros2`
+- `robot_description`
+- `rplidar_ros`
+
+# Workspace Layout
+Your workspace directory should contain the following packages:
+- `robot_description`
+- `rplidar_ros`
+- `t1_rover`
+- `t1_sim`
+- `t1_nav`
 
 
 ## Packages Overview
@@ -16,24 +23,24 @@ The `t1_rover` package deals with all the nodes for the Leo Rover. It includes:
 
 - Robot localization node.
 - Imu Filter node.
-- Launch files to visualize the rover in `rviz2` and `gazebo`.
+- Launch node to visualize the rover in `rviz2`.
 
 This package encapsulates all necessary components to view the rover standalone in `rviz2` and `gazebo`.
-You can also drive the rover around using teleop_twist_keyboard or other packages.
+You can also drive the rover around using `teleop_twist_keyboard` or other packages.
 
 ### robot_description
 
-It includes the urdf files for the leo robot, this is launched from the t1_rover launch file.
+Includes the urdf files for the leo robot, this is launched from the `t1_rover` launch file.
 
 ### rplidar_ros
 
-Includes different rplidars to launch, our specifc model we are using is the am12. This is launched from the t1_rover launch file
+Includes different rplidars to launch, our specifc model we are using is the `a2m12`. This is launched from the t1_rover launch file
 
 ### t1_sim
 
 `t1_sim` is geared towards simulation. It includes:
 
-- Launch files for Gazebo, providing a realistic simulation environment.
+- Launch node for Gazebo, providing a realistic simulation environment.
 - Bridging of topics to facilitate communication between ROS2 and Gazebo.
 
 This package contains everything necessary for a complete simulation experience.
@@ -43,7 +50,7 @@ This package contains everything necessary for a complete simulation experience.
 The `t1_nav` package is focused on autonomous navigation and mapping, it includes:
 
 - Integration with `nav2` and Behavior Trees for advanced navigation strategies.
-- Uses SLAM Toolbox for mapping
+- Uses `SLAM Toolbox` for mapping
 
 - There are scripts that are currently underdevelopment but still function and can be looked at for self learning
   - `explore.py` for autonomous navigation and mapping.
@@ -67,7 +74,13 @@ git clone -b ros2 https://github.com/Slamtec/rplidar_ros.git
 
 2. **Gazebo Ignition** - Follow the official Gazebo installation guide.
 
-4. **Rviz2** - Comes pre-installed with ROS2 distributions.
+3. **URDF Files Package** - make sure the `leo_description` package is in the same workspace
+
+```bash
+git clone -b ros2 https://github.com/LeoRover/leo_common-ros2.git
+```
+
+5. **Rviz2** - Comes pre-installed with ROS2 distributions.
 ```bash
 sudo apt update
 sudo apt install ros-<distro>-rviz2
@@ -78,12 +91,12 @@ sudo apt install ros-<distro>-rviz2
 sudo apt install ros-<distro>-robot-localization
 ```
 
-7. **Nav2**
+6. **Nav2**
 ```bash
 sudo apt install ros-<distro>-navigation2
 ```
 
-9. **SLAM**
+7. **SLAM**
 ```bash
 sudo apt install ros-<distro>-slam-toolbox
 ```
