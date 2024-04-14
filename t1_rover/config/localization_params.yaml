@@ -10,10 +10,11 @@ ekf_filter_node:
 # set to true, no 3D information will be used in your state estimate. Use this if you are operating in a planar
 # environment and want to ignore the effect of small variations in the ground plane that might otherwise be detected
 # by, for example, an IMU. Defaults to false if unspecified.
-        two_d_mode: false
+
+        two_d_mode: true # as we are operating mainly on flat surfaces
 
 # Whether to publish the acceleration state. Defaults to false if unspecified.
-        publish_acceleration: true
+        publish_acceleration: false
 
 # Whether to broadcast the transformation over the /tf topic. Defaultsto true if unspecified.
         publish_tf: true
@@ -33,18 +34,17 @@ ekf_filter_node:
         world_frame: odom           # Defaults to the value ofodom_frame if unspecified
 
         odom0: "wheel_odom_with_covariance" 
-        odom0_config: [false,  false,  false,
-                       false, false, false,
-                       true, false, false,
-                       false, false, true,
-                       false, false, false]
-        
-        #MAY not need, depends on the robot as imu is already filtered
-        imu0: "imu/data_raw"
-        imu0_config: [false, false, false,
-                      false,  false,  false,
-                      false, false, false,
-                      false, false, true,
-                      true, false, false]
+        odom0_config: [true, true, false,  # X, Y position (no Z if two_d_mode is true)
+                   false, false, true,  # Roll, Pitch, Yaw
+                   true, true, false,  # X, Y velocity (no Z if two_d_mode is true)
+                   false, false, true,  # Angular velocities
+                   false, false, false]  # No linear accelerations from odometry
+                   
+        imu0: "imu/data"
+        imu0_config: [false, false, false,  # No position from IMU
+                        true, true, false,  # Roll, Pitch, optional Yaw
+                        false, false, false,  # No velocities needed from IMU
+                        true, true, true,  # Linear accelerations
+                        true, true, true]  # Angular velocities
 
 

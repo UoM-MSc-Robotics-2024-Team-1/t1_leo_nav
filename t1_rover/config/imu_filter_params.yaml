@@ -1,0 +1,15 @@
+imu_filter_node:
+  ros__parameters:
+    frequency: 50.0
+    two_d_mode: false
+    publish_acceleration: true
+    publish_tf: false
+    base_link_frame: "base_link"
+    odom_frame: "odom"
+    world_frame: "odom"
+    imu0: "imu/data_raw"
+    imu0_config: [false, false, false,
+                  true, true, true,  # Use all orientation data
+                  false, false, false,
+                  true, true, true,  # Use all accelerations
+                  true, true, true]  # Use all angular velocities
