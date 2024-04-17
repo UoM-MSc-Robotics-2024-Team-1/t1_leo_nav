@@ -1,0 +1,5 @@
+# PatrolCommand.srv
+string command  # start, stop, resume
+---
+bool success    # true if the operation was successful
+string message  # Additional information

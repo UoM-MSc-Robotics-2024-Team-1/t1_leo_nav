@@ -20,6 +20,7 @@ setup(
         (os.path.join('share', package_name, 'config'), glob(os.path.join('config', '*.*yaml*'))),
         # Include map (.yaml and .pgm) files
         (os.path.join('share', package_name, 'maps'), glob(os.path.join('maps', '*.*yaml*'))),
+        (os.path.join('share', package_name, 'srv'), glob(os.path.join('srv', '*.*srv*'))),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -34,7 +35,8 @@ setup(
             'explore = t1_nav.explore:main',
             'simple_nav = t1_nav.simple_nav:main',
             'nav2_nav_test = t1_nav.nav2_nav_test:main',
-            'robot_navigator = t1_nav.robot_navigator:main'
+            'robot_navigator = t1_nav.robot_navigator:main',
+            'patrol_service_node = t1_nav.patrol_service_node:main',
         ],
     },
 )
