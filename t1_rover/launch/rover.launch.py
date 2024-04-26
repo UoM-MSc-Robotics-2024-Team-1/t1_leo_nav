@@ -50,8 +50,8 @@ def generate_launch_description():
 
     # Filter imu data
     imu_filter_node = Node(
-        package='robot_localization',
-        executable='ekf_node',
+        package='imu_filter_madgwick',
+        executable='imu_filter_madgwick_node',
         name='imu_filter_node',
         output='screen',
         parameters=[
@@ -76,13 +76,13 @@ def generate_launch_description():
         if context.launch_configurations['use_sim_time'] == 'true':
             return [sim_launch, robot_state_publisher_sim]
         else:
-            return [rplidar_launch]
+            return [rplidar_launch, imu_filter_node, robot_localization_node]
 
     # Add actions to LaunchDescription
     ld.add_action(use_sim_time_arg)
     ld.add_action(node_rviz)
-    ld.add_action(imu_filter_node)
-    ld.add_action(robot_localization_node)
+    #ld.add_action(imu_filter_node)
+    #ld.add_action(robot_localization_node)
     ld.add_action(OpaqueFunction(function=conditionally_launch_nodes))
 
     return ld

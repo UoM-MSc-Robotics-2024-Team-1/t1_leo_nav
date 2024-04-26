@@ -69,7 +69,7 @@ def generate_launch_description():
         name='bt_navigator',
         output='screen',
         parameters=[
-            config_params,
+            config_bt_nav,
             #{'default_nav_through_poses_bt_xml' : bt_xml_navtopose_file},
             {'use_sim_time': use_sim_time},
         ], 
@@ -84,7 +84,7 @@ def generate_launch_description():
         name='behaviour_server',
         output='screen',
         parameters=[
-            config_params,
+            config_bt_nav,
             #{'default_nav_through_poses_bt_xml' : bt_xml_navtopose_file},
             {'use_sim_time': use_sim_time},
         ], 
@@ -98,7 +98,7 @@ def generate_launch_description():
         name='planner_server',
         output='screen',
          parameters=[
-            config_params,
+            config_planner,
             {'use_sim_time': use_sim_time},
         ], 
         remappings=remappings,
@@ -111,7 +111,7 @@ def generate_launch_description():
         name='controller_server',
         output='screen',
          parameters=[
-            config_params,
+            config_controller,
             {'use_sim_time': use_sim_time},
         ], 
         remappings=remappings,

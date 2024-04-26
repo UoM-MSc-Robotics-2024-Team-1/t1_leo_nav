@@ -1,15 +1,20 @@
+# http://wiki.ros.org/imu_filter_madgwick
 imu_filter_node:
   ros__parameters:
-    frequency: 50.0
-    two_d_mode: false
-    publish_acceleration: true
-    publish_tf: false
-    base_link_frame: "base_link"
-    odom_frame: "odom"
-    world_frame: "odom"
-    imu0: "imu/data_raw"
-    imu0_config: [false, false, false,
-                  true, true, true,  # Use all orientation data
-                  false, false, false,
-                  true, true, true,  # Use all accelerations
-                  true, true, true]  # Use all angular velocities
+    gain: 0.1 # The gain of the filter. This is a factor that determines how fast the filter converges. A higher value will make the filter converge faster, but will also introduce more noise.
+    zeta: 0.0 # The gyro drift bias (only relevant for the complementary filter, not used in the Madgwick filter).
+    mag_bias_x: 0.0 # The magnetic bias
+    mag_bias_y: 0.0
+    mag_bias_z: 0.0
+    orientation_stddev: 0.0 # The standard deviation of the orientation measurements.
+
+    world_frame: nwu # The world frame orientation (north-west-up). Can use "enu" or "ned" as well.
+    use_mag: false # Whether to use magnetometer data.
+    use_magnetic_field_msg: false # Whether to use magnetic field messages.
+    publish_tf: false # Whether to publish transform from the fixed frame to the imu frame.
+    # fixed_frame: odom # The fixed frame (uncomment to use).
+    # reverse_tf: false # Whether to reverse the direction of the published transform (uncomment to use).
+    constant_dt: 0.0 # If greater than 0, the filter will use this constant time step.
+    publish_debug_topics: false # Whether to publish debug topics.
+    stateless: false # If true, the filter will not remember its state between time steps.
+    remove_gravity_vector: false # If true, the filter will remove the gravity vector from the acceleration measurements.
