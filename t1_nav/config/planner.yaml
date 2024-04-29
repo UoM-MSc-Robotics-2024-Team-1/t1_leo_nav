@@ -5,51 +5,82 @@ planner_server:
     planner_plugins: ["GridBased"]
     GridBased:
       plugin: "nav2_navfn_planner/NavfnPlanner"
-      tolerance: 0.5
-      use_astar: true
       allow_unknown: true
+      default_tolerance: 0.0
+      visualize_potential: false
+      use_dijkstra: true
+      use_quadratic: true
+      use_grid_path: false
+      old_navfn_behavior: false
+      lethal_cost: 253
+      neutral_cost: 50
+      cost_factor: 3.0
+      publish_potential: true
+      orientation_mode: 0
+      orientation_window_size: 1
 
 
 global_costmap:
   global_costmap:
     ros__parameters:
-      update_frequency: 1.0
-      publish_frequency: 1.0
       global_frame: map
-      robot_base_frame: base_link
-      use_sim_time: True
-      # footprint: []
-      # footprint_padding: 0.01
-      robot_radius: 0.3
-      resolution: 0.06
-      track_unknown_space: true
-      always_send_full_costmap: True
+      robot_base_frame: base_footprint
+      transform_tolerance: 0.5
+      update_frequency: 2.0
+      publish_frequency: 2.0
+      rolling_window: false
+      always_send_full_costmap: false
+
+      resolution: 0.05
+      width: 40
+      height: 40
+      origin_x: -20.0
+      origin_y: -20.0
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
+
+
+      static_layer:
+        plugin: "nav2_costmap_2d::StaticLayer"
+        map_subscribe_transient_local: True
+        unknown_cost_value: -1
+        lethal_cost_threshold: 100
+        map_topic: /map
+        first_map_only: false
+        subscribe_to_updates: false
+        track_unknown_space: true
+        use_maximum: false
+        trinary_costmap: true
 
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
         observation_sources: scan_source
+        max_obstacle_height: 0.3
+        obstacle_range: 2.5
+        raytrace_range: 3.0
+        track_unknown_space: false
+        footprint_clearing_enabled: true
+        combination_method: 1
+
 
         scan_source:
           topic: /scan
-          max_obstacle_height: 2.0
-          clearing: True
-          marking: True
+          observation_persistence: 0.0
+          expected_update_rate: 0.30
+          clearing: true
+          marking: true
           data_type: "LaserScan"
+          min_obstacle_height: 0.1
+          max_obstacle_height: 0.3
           raytrace_max_range: 3.0
           raytrace_min_range: 0.0
           obstacle_max_range: 2.5
           obstacle_min_range: 0.0 # tune
-
-      static_layer:
-        plugin: "nav2_costmap_2d::StaticLayer"
-        map_subscribe_transient_local: True
-        map_topic: /map
+          inf_is_valid: false
 
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 4.0 # tune
-        inflation_radius: 0.3 # tune
+        cost_scaling_factor: 30.0 # tune
+        inflation_radius: 0.4 # tune
 
 #footprint: "[ [0.2165, 0.2235], [0.2165, -0.2235], [-0.2165, -0.2235], [-0.2165, 0.2235] ]" # The leo rovers footprint

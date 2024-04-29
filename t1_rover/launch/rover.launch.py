@@ -76,7 +76,7 @@ def generate_launch_description():
         if context.launch_configurations['use_sim_time'] == 'true':
             return [sim_launch, robot_state_publisher_sim]
         else:
-            return [rplidar_launch, imu_filter_node, robot_localization_node]
+            return [rplidar_launch, imu_filter_node, robot_localization_node] 
 
     # Add actions to LaunchDescription
     ld.add_action(use_sim_time_arg)

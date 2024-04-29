@@ -10,6 +10,11 @@
   <build_depend>rosidl_default_generators</build_depend>
   <exec_depend>rosidl_default_runtime</exec_depend>
   <depend>geometry_msgs</depend>
+
+  <build_depend>t1_interfaces</build_depend>
+  <build_export_depend>t1_interfaces</build_export_depend>
+  <exec_depend>t1_interfaces</exec_depend>
+
   <member_of_group>rosidl_interface_packages</member_of_group>
 
   <test_depend>ament_copyright</test_depend>
