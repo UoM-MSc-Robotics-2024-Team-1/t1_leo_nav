@@ -8,11 +8,12 @@ The `t1_leo_nav` repository is a comprehensive suite designed for ROS2, tailored
 
 # Workspace Layout
 Your workspace directory should contain the following packages:
-- `robot_description`
+- `leo_description`
 - `rplidar_ros`
 - `t1_rover`
 - `t1_sim`
 - `t1_nav`
+- `t1_ui`
 
 
 ## Packages Overview
@@ -60,6 +61,20 @@ The `t1_nav` package is focused on autonomous navigation and mapping, it include
   - `robot_navigate.py` containing various functions for navigation using nav2.
 
 The main launch file is `t1_nav`, though `t1_rover` can also be launched independently if you dont want navigation.
+
+# T1 Rover User Interface (t1_ui)
+
+The T1 Rover User Interface (t1_ui) is a graphical application designed to facilitate navigation and control of the T1 Rover system. This user-friendly interface enables operators to interact with the rover, providing essential functionalities for navigation and system control. Key features include:
+
+- **State Machine Control**: Initiate the rover's state machine for autonomous operation.
+- **Position Setting and Navigation**: Define target positions and command the rover to navigate to specified coordinates.
+- **Emergency Stop**: Halt rover motion instantaneously with the emergency stop functionality.
+- **Start Position Configuration**: Configure the rover's start position for accurate navigation.
+- **Return to Start Position**: Command the rover to return to its designated starting location.
+
+The application also incorporates robust connectivity checks to ensure seamless communication between the rover and the control system. These checks verify connectivity with both the rover hardware and the NUC (Mini PC), providing real-time status updates to the user.
+
+**This is automatically run with t1_nav for ease of use.**
 
 ## Installation
 
