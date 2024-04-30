@@ -24,6 +24,7 @@
   <test_depend>nav2_map_server</test_depend>
   <test_depend>rclpy</test_depend>
   <test_depend>t1_rover</test_depend>
+  <test_depend>t1_ui</test_depend>
   <test_depend>nav2_planner</test_depend>
   <test_depend>nav2_costmap_2d</test_depend>
   

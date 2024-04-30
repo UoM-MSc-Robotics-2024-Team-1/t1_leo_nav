@@ -6,7 +6,7 @@ from geometry_msgs.msg import PoseStamped, Point, Quaternion
 from visualization_msgs.msg import Marker
 from std_msgs.msg import ColorRGBA
 from tf_transformations import quaternion_from_euler
-from .robot_navigator import BasicNavigator, NavigationResult  # Helper module
+from t1_nav.robot_navigator import BasicNavigator, NavigationResult
 
 class SimpleNavigator(Node):
     def __init__(self):

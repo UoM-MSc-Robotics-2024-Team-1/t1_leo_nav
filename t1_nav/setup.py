@@ -38,6 +38,8 @@ setup(
             'patrol_service_node = t1_nav.patrol_service_node:main',
             'patroling_node = t1_nav.patroling_node:main',
             'robot_state_machine = t1_nav.robot_state_machine:main',
+            'main = t1_ui.main:main',
+            'drive_to_apriltag = t1_nav.drive_to_apriltag:main',
         ],
     },
 )

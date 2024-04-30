@@ -7,6 +7,7 @@ from std_srvs.srv import SetBool
 from .robot_navigator import BasicNavigator
 from geometry_msgs.msg import PoseStamped
 from t1_interfaces.srv import Command
+from tf2_ros import TransformStamped
 
 
 ##! TERMINAL COMMANDS: !##
@@ -17,7 +18,7 @@ from t1_interfaces.srv import Command
 class State:
     PATROL = 'PATROL'
     MOVE_TO_OBJECT = 'MOVE_TO_OBJECT'
-    MANIPULATE_OBJECT = 'PICKUP_OBJECT'
+    PICKUP_OBJECT = 'PICKUP_OBJECT'
     IDLE = 'IDLE'
 
 # State machine to control the robot's behavior
@@ -33,6 +34,8 @@ class RobotStateMachine(LifecycleNode):
         #self.transition_timer = self.create_timer(15, self.transition_states_timer)  # Transition states every 5 seconds for testing
         self.patrol_service_client = self.create_client(SetBool, '/toggle_patrol') # Service client to send patrol commands (Start/Stop)
         self.state_service = self.create_service(Command, '/change_state', self.handle_change_state) # Service to change state (Need custom service, not working for me)
+
+        self.listen_for_object_position()  # Listen for topic to detect object position
 
 
     # Send patrol command to the patrol node
@@ -84,6 +87,14 @@ class RobotStateMachine(LifecycleNode):
         elif new_state == State.MOVE_TO_OBJECT:
             self.send_patrol_command(False) # Stop patrolling
 
+        elif new_state == State.PICKUP_OBJECT:
+            self.pickup_object()
+            
+        elif new_state == State.IDLE:
+            self.send_patrol_command(False) # Stop patrolling
+
+        
+
         self.current_state = new_state
         self.get_logger().info('Transitioning to state: ' + new_state)
 
@@ -98,15 +109,36 @@ class RobotStateMachine(LifecycleNode):
     def pickup_object(self):
         self.get_logger().info('Picking up object...')
 
+    # listen for a topic to be published with the object position
     def listen_for_object_position(self):
         self.get_logger().info('Listening for camera position...')
         # Create a subscription to the camera position topic
         self.subscription = self.create_subscription(
             PoseStamped,  # Assuming Position is the message type
-            '/camera/position',  # Assuming this is the topic name
+            '/aruco_markers',  # Assuming this is the topic name
             self.move_to_object, # Callback function
             10  # Queue size
         )
+
+    # listen for a tf frame to be published with the object position
+    def listen_for_object_position_tf(self):
+        self.get_logger().info('Listening for AprilTag detection...')
+        # Create a subscription to TF frames
+        self.tf_subscriber = self.create_subscription(
+            TransformStamped,  # Message type for TF frames
+            '/tf',  # Assuming this is the topic name for TF frames
+            self.tf_callback,  # Callback function
+            10  # Queue size
+    )
+
+    #check if tf frame is found
+    def tf_callback(self, msg):
+        # Check if the TF frame corresponding to the AprilTag is available
+        if self.tf_buffer.can_transform('base_footprint', 'tagStandard41h12:ID', rclpy.time.Time()):
+            self.get_logger().info('AprilTag detected, moving to object...')
+            self.move_to_object(msg)  # Call the move_to_object method
+            # After detecting the AprilTag, you may want to unsubscribe from further TF messages
+            self.tf_subscriber.destroy()  # Unsubscribe from TF messages
 
 
 def main(args=None):

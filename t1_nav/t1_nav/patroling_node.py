@@ -62,9 +62,9 @@ class PatrolNode(Node):
     def create_waypoints(self):
         """ Generate or retrieve waypoints """
         return [
-            self.create_pose_stamped(2.0, 0.0, 0.0, 0.0),
-            self.create_pose_stamped(2.0, 1.0, 0.0, 0.0),
-            self.create_pose_stamped(0.0, 1.0, 0.0, 0.0),
+            self.create_pose_stamped(2.0, 0.0, 0.0, 6.28),
+            self.create_pose_stamped(2.0, 1.0, 0.0, 6.28),
+            self.create_pose_stamped(0.0, 1.0, 0.0, 6.28),
             # Add more waypoints as needed
         ]
     

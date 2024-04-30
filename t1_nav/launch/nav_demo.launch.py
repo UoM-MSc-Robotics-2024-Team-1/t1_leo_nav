@@ -168,6 +168,13 @@ def generate_launch_description():
         output='screen',
     )
 
+    node_ui_nav = Node(
+        package='t1_ui',
+        executable='main',
+        name='main',
+        output='screen',
+    )
+
 
     # Add actions to LaunchDescription
     ld.add_action(use_sim_time_arg)
@@ -178,6 +185,7 @@ def generate_launch_description():
     ld.add_action(node_planner)
     ld.add_action(node_controller)
     ld.add_action(node_lifecycle_manager)
+    ld.add_action(node_ui_nav)
     #ld.add_action(node_map_server)
     #ld.add_action(node_amcl)
     #ld.add_action(node_waypoint_follower)
