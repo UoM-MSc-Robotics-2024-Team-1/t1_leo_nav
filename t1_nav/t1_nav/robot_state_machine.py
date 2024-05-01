@@ -1,5 +1,6 @@
 import rclpy
 import time
+import subprocess
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.lifecycle import LifecycleNode
 from .patroling_node import PatrolNode
@@ -108,6 +109,16 @@ class RobotStateMachine(LifecycleNode):
     # It needs to let the state machine know when the object has been picked up
     def pickup_object(self):
         self.get_logger().info('Picking up object...')
+        try:
+        # Command to start the launch file
+            subprocess.run(['ros2', 'launch', 't1_manipulator', 'manipulator_topic_ver.launch.py'], check=True)
+            self.get_logger().info('Launch file executed successfully.')
+        except subprocess.CalledProcessError as e:
+            self.get_logger().error(f'Failed to execute launch file: {e}')
+
+    # After executing the launch file, transition to the appropriate state
+        self.transition_state(State.PICKUP_OBJECT)
+        
 
     # listen for a topic to be published with the object position
     def listen_for_object_position(self):
