@@ -24,6 +24,14 @@ controller_server:
       stateful: True
 
     FollowPath:
+      plugin: "nav2_rotation_shim_controller::RotationShimController"
+      primary_controller: "dwb_core::DWBLocalPlanner"
+      angular_dist_threshold: 0.785
+      forward_sampling_distance: 0.5
+      rotate_to_heading_angular_vel: 1.8
+      max_angular_accel: 3.2
+      simulate_ahead_time: 1.0
+      
       # Primary DWBLocalPlanner controller parameters
       plugin: "dwb_core::DWBLocalPlanner"
       debug_trajectory_details: True
@@ -38,7 +46,7 @@ controller_server:
       holonomic_robot: false
 
       min_speed_xy: 0.0
-      max_speed_xy: 0.26
+      max_speed_xy: 0.25
       min_speed_theta: 0.0
       acc_lim_x: 1.0
       acc_lim_y: 0.0

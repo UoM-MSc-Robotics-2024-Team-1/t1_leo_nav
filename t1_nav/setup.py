@@ -40,6 +40,7 @@ setup(
             'robot_state_machine = t1_nav.robot_state_machine:main',
             'main = t1_ui.main:main',
             'drive_to_apriltag = t1_nav.drive_to_apriltag:main',
+            'manipulator_test = t1_nav.manipulator_test:main',
         ],
     },
 )
