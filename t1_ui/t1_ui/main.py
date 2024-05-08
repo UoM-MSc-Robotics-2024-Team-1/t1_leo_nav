@@ -3,9 +3,10 @@ from PyQt5.QtCore import QTimer, QObject, pyqtSignal
 import sys
 import rclpy
 import subprocess
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, Twist
 from tf_transformations import quaternion_from_euler
 from t1_nav.robot_navigator import BasicNavigator, NavigationResult
+from rclpy.node import Node
 import subprocess
 import threading
 
@@ -31,10 +32,30 @@ class Worker(QObject):
         except Exception as e:
             self.window.connection_status_robot.setText(f"Error: {str(e)}")
 
-class MainWindow(QMainWindow):
+
+class CmdVelNode(Node):
     def __init__(self):
-        super().__init__()
+        super().__init__('cmd_vel_node')
+        self.subscription = self.create_subscription(
+            Twist,
+            '/cmd_vel',
+            self.handle_cmd_vel,
+            10
+        )
+        self.linear_speed = 0.0
+
+    def handle_cmd_vel(self, msg):
+        self.linear_speed = msg.linear.x
+
+
+class MainWindow(QMainWindow):
+    def __init__(self, node):
+        QMainWindow.__init__(self)
+        self.node = node  # Use the node in your MainWindow class
         nav = BasicNavigator()
+
+        self.linear_speed = 0.0
+
         self.setWindowTitle("T1 Rover App")
         self.setGeometry(300, 200, 480, 300)
 
@@ -46,6 +67,7 @@ class MainWindow(QMainWindow):
 
         # Create a vertical layout
         layout = QVBoxLayout()
+        self.speed_label = QLabel("Current Velcoity: " + str(self.linear_speed) + " | Max Velocity: 0.25", self)
         self.x_label = QLabel("X:", self)
         self.x_input = QLineEdit(self)
         self.y_label = QLabel("Y:", self)
@@ -66,9 +88,11 @@ class MainWindow(QMainWindow):
         btn4.clicked.connect(lambda: self.return_home(nav))
         btn5.clicked.connect(lambda: nav._setInitialPose())
         btn6.clicked.connect(self.start_state_machine)
+
         
         layout.addWidget(self.connection_status_nuc)
         layout.addWidget(self.connection_status_robot)
+        layout.addWidget(self.speed_label)
         layout.addWidget(btn6)
         layout.addWidget(self.x_label)
         layout.addWidget(self.x_input)
@@ -86,11 +110,20 @@ class MainWindow(QMainWindow):
         self.timer.start(2000)  # Check every 2 seconds
         self.check_connections()
 
+        # Setup QTimer to periodically update speed label
+        self.speed_timer = QTimer()
+        self.speed_timer.timeout.connect(self.handle_cmd_vel)
+        self.speed_timer.start(1000)  # Update every second
+
     def start_state_machine(self):
         if self.check_connection_nuc():
             subprocess.run(["ssh", "username@nuc_ip_address", "ros2 run t1_nav robot_state_machine"])
         else:
             subprocess.run(["ros2", "run", "t1_nav", "robot_state_machine"])
+
+    def handle_cmd_vel(self):
+        self.linear_speed = self.node.linear_speed
+        self.speed_label.setText("Current Velcoity: " + str(self.linear_speed) + " | Max Velocity: 0.25")
 
     def return_home(self, nav):
         if nav.initial_pose:
@@ -118,8 +151,9 @@ class MainWindow(QMainWindow):
 
 def main():
     rclpy.init()
+    node = CmdVelNode()
     app = QApplication(sys.argv)
-    window = MainWindow()
+    window = MainWindow(node)
     window.show()
     sys.exit(app.exec_())
 

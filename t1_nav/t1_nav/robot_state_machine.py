@@ -9,7 +9,8 @@ from .robot_navigator import BasicNavigator
 from geometry_msgs.msg import PoseStamped
 from t1_interfaces.srv import Command
 from tf2_ros import TransformStamped
-
+from geometry_msgs.msg import Point
+from tf_transformations import quaternion_from_euler
 
 ##! TERMINAL COMMANDS: !##
 # Run the state machine node with: ros2 run t1_nav robot_state_machine
@@ -47,8 +48,8 @@ class RobotStateMachine(LifecycleNode):
 
 
         # Initial state
-        self.current_state = State.EXPLORE # Start in the patrol state
-        self.current_nav_state = State.EXPLORE
+        self.current_state = State.IDLE # Start in the patrol state
+        self.current_nav_state = State.IDLE
         #self.transition_timer = self.create_timer(15, self.transition_states_timer)  # Transition states every 5 seconds for testing
 
         # Service clients to send commands to other nodes
@@ -168,15 +169,19 @@ class RobotStateMachine(LifecycleNode):
             self.current_nav_state = new_state
             
         elif new_state == State.MOVE_TO_OBJECT:
-            self.send_patrol_command(False) # Stop patrolling
-            self.send_explore_command(False) # Stop exploring
+            if self.current_nav_state == State.EXPLORE:
+                self.send_explore_command(False)
+            else :
+                self.send_patrol_command(False)
 
         elif new_state == State.PICKUP_OBJECT:
             self.pickup_object()
             
         elif new_state == State.IDLE:
-            self.send_patrol_command(False) # Stop patrolling
-            self.send_explore_command(False) # Stop exploring
+            if self.current_nav_state == State.EXPLORE:
+                self.send_explore_command(False)
+            else :
+                self.send_patrol_command(False)
 
         self.current_state = new_state
         self.get_logger().info('Transitioning to state: ' + new_state)
@@ -192,26 +197,39 @@ class RobotStateMachine(LifecycleNode):
         self.transition_state(new_state)
 
     # Add logic to move to object here
-    def move_to_object(self, msg: PoseStamped):
+    def move_to_object(self, msg: Point):
         if self.current_state == State.MOVE_TO_OBJECT:
             return
         
+        self.transition_state(State.MOVE_TO_OBJECT)
         self.get_logger().info('Moving to object...')
         
         #if timer exists delete it
         if self.nav_timer is not None:
                 self.nav_timer.cancel()
         
-        self.transition_state(State.MOVE_TO_OBJECT)
 
          # Wait for a short delay before transitioning to MOVE_TO_OBJECT state
         time.sleep(0.5)  # Adjust the delay time as needed
     
-
-        self.nav.goToPose(msg) # Move to the object position
+        pos = self.create_pose_stamped(msg.x, msg.y, msg.z, 0) # Create a PoseStamped message from point message
+        self.nav.goToPose(pos) # Move to the object position
 
         # Start a timer to check if the object has been reached
-        self.nav_timer = self.create_timer(1.0, self.check_object_reached)
+        #self.nav_timer = self.create_timer(1.0, self.check_object_reached)
+
+    def create_pose_stamped(self, x, y, z, yaw, frame_id='map'):
+        pose = PoseStamped()
+        pose.header.frame_id = frame_id
+        q = quaternion_from_euler(0, 0, yaw)
+        pose.pose.position.x = x
+        pose.pose.position.y = y
+        pose.pose.position.z = z
+        pose.pose.orientation.x = q[0]
+        pose.pose.orientation.y = q[1]
+        pose.pose.orientation.z = q[2]
+        pose.pose.orientation.w = q[3]
+        return pose
 
     # Check if the object has been reached
     def check_object_reached(self):
@@ -239,8 +257,8 @@ class RobotStateMachine(LifecycleNode):
         self.get_logger().info('Listening for camera position...')
         # Create a subscription to the camera position topic
         self.subscription = self.create_subscription(
-            PoseStamped,  # Assuming Position is the message type
-            '/aruco_markers',  # Assuming this is the topic name
+            Point,  # Assuming Position is the message type
+            'object_info',  # Assuming this is the topic name
             self.move_to_object, # Callback function
             10  # Queue size
         )

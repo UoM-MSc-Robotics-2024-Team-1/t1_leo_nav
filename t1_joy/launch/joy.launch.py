@@ -23,7 +23,6 @@ def generate_launch_description():
         name='teleop_node',
         parameters=[
             os.path.join(get_package_share_directory(pkg_name), 'config/joy.yaml'),],
-        remappings=[('cmd_vel', LaunchConfiguration('cmd_vel_topic'))]
     )
 
     ld.add_action(joy_node)
